@@ -1,6 +1,6 @@
 let canvas = document.querySelector("canvas");
 let ctx = canvas.getContext('2d');
-ctx.
+
 // defining the game width and height
 canvas.width = innerWidth;
 canvas.height = innerHeight;
