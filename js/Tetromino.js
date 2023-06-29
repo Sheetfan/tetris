@@ -52,80 +52,86 @@ class Tetromino{
         this.currentTetromino = Tetromino.tetrominos[6];
         this.x = 3;
         this.y = 0;
+        this.futurex = 0;
+        this.futurey = 0;
+        
         this.updateTetromino();
         this.timeoutid = 0;
         this.movementDownId = setInterval(this.moveDown.bind(this), 1000);
-        this.horizontalMovementId;
+        this.horizontalMovementId = 0;
         this.isKeyPressed = false;
         this.isKeyPressedhorizontal = false;
-        
-        window.addEventListener("keydown",(e)=>{
-            const timerOutinterval = 100;
-            const horizontalInterval = 100;
-            const downInterval = 50;
-                // if (e.defaultPrevented) {
-                //     this.isKeyPressed = true;
-                //     return; // Do nothing if the event was already processed
-                // }
+        this.refmovement = this.movement.bind(this);
+        this.refmovementUp = this.movementUp.bind(this);
+        window.addEventListener("keydown",this.refmovement);
 
-            // spins the tetroino
-            if((e.key === "Up" || e.key === "ArrowUp") && !this.isKeyPressed){
-                this.rotateTetroino();
-                this.isKeyPressed = true;
-            }
+        window.addEventListener("keyup", this.refmovementUp);
+    }
+    movement(e){
+        const timerOutinterval = 100;
+        const horizontalInterval = 100;
+        const downInterval = 50;
+            // if (e.defaultPrevented) {
+            //     this.isKeyPressed = true;
+            //     return; // Do nothing if the event was already processed
+            // }
 
-            // moves the tetroino down faster
-            if((e.key === "Down" || e.key === "ArrowDown") && !this.isKeyPressed){
-                this.moveDown();
-                this.movementDownId = setInterval(this.moveDown.bind(this), downInterval);
-                this.isKeyPressed = true;
-            }
-        
-            // moves the tetroino to the left
-            if((e.key === "Left" || e.key === "ArrowLeft") && !this.isKeyPressedhorizontal){
-                this.moveLeft();
-                this.timeoutid = setTimeout(() => {
-                    this.horizontalMovementId = setInterval(this.moveLeft.bind(this), horizontalInterval);
-                },timerOutinterval);
-                this.isKeyPressedhorizontal = true;
-            }
-            // moves the tetroino to the right
-            else if((e.key === "Right" || e.key === "ArrowRight") && !this.isKeyPressedhorizontal){
-                this.moveRight();
-                this.timeoutid = setTimeout(() => {
-                    this.horizontalMovementId = setInterval(this.moveRight.bind(this),  horizontalInterval);
-                },timerOutinterval);
-                this.isKeyPressedhorizontal = true;
-            }
-            
-            
-        });
+        // spins the tetroino
+        if((e.key === "Up" || e.key === "ArrowUp") && !this.isKeyPressed){
+            this.rotateTetroino();
+            this.isKeyPressed = true;
+        }
 
-        window.addEventListener("keyup",(e)=>{
-            if((e.key === "Up" || e.key === "ArrowUp") && this.isKeyPressed){
-                this.isKeyPressed = false;
-            }
-            if((e.key === "Down" || e.key === "ArrowDown") && this.isKeyPressed) {
-                this.isKeyPressed = false;
-                clearInterval(this.movementDownId);
-                this.movementDownId = setInterval(this.moveDown.bind(this), 1000);
-            }
-            
-            if((e.key === "Right" || e.key === "ArrowRight") && this.isKeyPressed){
-                this.isKeyPressed = false;
-                clearInterval(this.horizontalMovementId);
-            }
-
-            if((e.key === "Left" || e.key === "ArrowLeft" || e.key === "Right" || e.key === "ArrowRight") && this.isKeyPressedhorizontal){
-                this.isKeyPressedhorizontal = false;
-                clearTimeout(this.timeoutid);
-                clearInterval(this.horizontalMovementId);
-            }
-        });
+        // moves the tetroino down faster
+        if((e.key === "Down" || e.key === "ArrowDown") && !this.isKeyPressed){clearInterval(this.movementDownId);
+            this.moveDown();
+            this.movementDownId = setInterval(this.moveDown.bind(this), downInterval);
+            this.isKeyPressed = true;
+        }
+    
+        // moves the tetroino to the left
+        if((e.key === "Left" || e.key === "ArrowLeft") && !this.isKeyPressedhorizontal){
+            this.moveLeft();
+            this.timeoutid = setTimeout(() => {
+                this.horizontalMovementId = setInterval(this.moveLeft.bind(this), horizontalInterval);
+            },timerOutinterval);
+            this.isKeyPressedhorizontal = true;
+        }
+        // moves the tetroino to the right
+        else if((e.key === "Right" || e.key === "ArrowRight") && !this.isKeyPressedhorizontal){
+            this.moveRight();
+            this.timeoutid = setTimeout(() => {
+                this.horizontalMovementId = setInterval(this.moveRight.bind(this),  horizontalInterval);
+            },timerOutinterval);
+            this.isKeyPressedhorizontal = true;
+        }
+    }
+    movementUp(e){
+        if((e.key === "Up" || e.key === "ArrowUp") && this.isKeyPressed){
+            this.isKeyPressed = false;
+        }
+        if((e.key === "Down" || e.key === "ArrowDown") && this.isKeyPressed) {
+            this.isKeyPressed = false;
+            clearInterval(this.movementDownId);
+            this.movementDownId = setInterval(this.moveDown.bind(this), 1000);
+        }
+        if((e.key === "Left" || e.key === "ArrowLeft" || e.key === "Right" || e.key === "ArrowRight")
+                && this.isKeyPressedhorizontal){
+            this.isKeyPressedhorizontal = false;
+            clearTimeout(this.timeoutid);
+            clearInterval(this.horizontalMovementId);
+        }
     }
     moveDown(){
         this.y++;
         this.updateTetromino();
+    }
+    stopMoveingDown(){
+        window.removeEventListener("keydown", this.refmovement);
+        window.removeEventListener("keyup", this.refmovementUp);
+        clearTimeout(this.timeoutid);
+        clearInterval(this.horizontalMovementId);
+        clearInterval(this.movementDownId);
     }
     moveRight(){
         this.x++;
@@ -162,7 +168,7 @@ class Tetromino{
         this.updateTetromino();
     }
 
-    update(){
+    update(){      
 
     }
 
