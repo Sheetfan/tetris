@@ -41,9 +41,18 @@ class GameContainer{
             this.gridArray.push(row);
         }
     }
-
+    addToBlocksArray(){
+        let {currentTetromino,y,x} = this.game.tetromino;
+        for(let i = 0; i < currentTetromino.length; i++){
+            for(let k = 0; k < currentTetromino[i].length; k++){
+                if(currentTetromino[i][k] !== "0"){
+                    this.blocksArray[y + i][x + k] = currentTetromino[i][k];
+                }
+            }
+        }
+    }
     update(){
-        
+        this.clearGridArray();
     }
 
     draw(){
@@ -62,40 +71,44 @@ class GameContainer{
         // }
         
         // ctx.fillRect(this.x + (this.game.block.x * this.blockSize),this.y + (this.game.block.y * this.blockSize),this.blockSize,this.blockSize);
-        for(let i = 0; i < this.rowLength; i++){
-            for(let k = 0; k < this.columnsLength; k++){
-                if(this.gridArray[i][k] !== "0"){
-                    switch(this.gridArray[i][k]){
-                        case "1":
-                            ctx.fillStyle = Tetromino.tetrominosColour[0];
-                            break;
-                        case "2":
-                            ctx.fillStyle = Tetromino.tetrominosColour[1];
-                            break;
-                        case "3":
-                            ctx.fillStyle = Tetromino.tetrominosColour[2];
-                            break;
-                        case "4":
-                            ctx.fillStyle = Tetromino.tetrominosColour[3];
-                            break;
-                        case "5":
-                            ctx.fillStyle = Tetromino.tetrominosColour[4];
-                            break;
-                        case "6":
-                            ctx.fillStyle = Tetromino.tetrominosColour[5];
-                            break;
-                        case "7":
-                            ctx.fillStyle = Tetromino.tetrominosColour[6];
-                            break;
+        let twoArrays = [this.gridArray,this.blocksArray];
+        twoArrays.forEach(array =>{
+            for(let i = 0; i < this.rowLength; i++){
+                for(let k = 0; k < this.columnsLength; k++){
+                    if(array[i][k] !== "0"){
+                        switch(array[i][k]){
+                            case "1":
+                                ctx.fillStyle = Tetromino.tetrominosColour[0];
+                                break;
+                            case "2":
+                                ctx.fillStyle = Tetromino.tetrominosColour[1];
+                                break;
+                            case "3":
+                                ctx.fillStyle = Tetromino.tetrominosColour[2];
+                                break;
+                            case "4":
+                                ctx.fillStyle = Tetromino.tetrominosColour[3];
+                                break;
+                            case "5":
+                                ctx.fillStyle = Tetromino.tetrominosColour[4];
+                                break;
+                            case "6":
+                                ctx.fillStyle = Tetromino.tetrominosColour[5];
+                                break;
+                            case "7":
+                                ctx.fillStyle = Tetromino.tetrominosColour[6];
+                                break;
+                        }
+                        ctx.fillRect(this.x + (this.blockSize*k),this.y + (this.blockSize*i),this.blockSize,this.blockSize);
+    
+                        // Draws the black border
+                        ctx.strokeStyle = "black";
+                        ctx.strokeRect(this.x + (this.blockSize*k),this.y + (this.blockSize*i),this.blockSize,this.blockSize);
                     }
-                    ctx.fillRect(this.x + (this.blockSize*k),this.y + (this.blockSize*i),this.blockSize,this.blockSize);
-
-                    // Draws the black border
-                    ctx.strokeStyle = "black";
-                    ctx.strokeRect(this.x + (this.blockSize*k),this.y + (this.blockSize*i),this.blockSize,this.blockSize);
                 }
             }
-        }
+        });
+        
 
         // Draws the outside border
         ctx.strokeStyle = "white";
