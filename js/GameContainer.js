@@ -5,18 +5,18 @@ class GameContainer{
         this.rowLength = 20;
         this.columnsLength = 10;
 
-        // make the array tiles
+        // Make the array tiles
         this.gridArray = [];
         this.clearGridArray();
 
-        // will save all the placed block positions
+        // Will save all the placed block positions
         this.blocksArray = [];
         this.clearBlocksArray();
 
         this.height = this.blockSize * this.rowLength;
         this.width = this.blockSize * this.columnsLength;
 
-        // set screen to the middle
+        // Set screen to the middle
         this.x = (this.game.gameWidth - this.width) / 2;
         this.y = (this.game.gameHeight - this.height) / 2;
     }

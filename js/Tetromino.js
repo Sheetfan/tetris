@@ -85,13 +85,13 @@ class Tetromino{
             //     return; // Do nothing if the event was already processed
             // }
 
-        // spins the tetroino
+        // Spins the tetroino
         if((e.key === "Up" || e.key === "ArrowUp") && !this.isKeyPressed){
             this.rotateTetroino();
             this.isKeyPressed = true;
         }
 
-        // moves the tetroino down faster
+        // Moves the tetroino down faster
         if((e.key === "Down" || e.key === "ArrowDown") && !this.isKeyPressed){
             clearInterval(this.movementDownId);
             this.moveDown();
@@ -99,7 +99,7 @@ class Tetromino{
             this.isKeyPressed = true;
         }
     
-        // moves the tetroino to the left
+        // Moves the tetroino to the left
         if((e.key === "Left" || e.key === "ArrowLeft") && !this.isKeyPressedhorizontal){
             this.moveLeft();
             this.timeoutid = setTimeout(() => {
@@ -107,7 +107,7 @@ class Tetromino{
             },timerOutinterval);
             this.isKeyPressedhorizontal = true;
         }
-        // moves the tetroino to the right
+        // Moves the tetroino to the right
         else if((e.key === "Right" || e.key === "ArrowRight") && !this.isKeyPressedhorizontal){
             this.moveRight();
             this.timeoutid = setTimeout(() => {
