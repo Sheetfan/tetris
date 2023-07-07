@@ -37,6 +37,8 @@ class Game{
         let {blocksArray,columnsLength,rowLength} = this.gameContainer;
         let countColumns = 0;
         let howManylines = 0; // To track how many row to shift down by
+        let startingline = 0;
+        let i = rowLength - 1;
 
         blocksArray.forEach(row =>{
             row.forEach(block =>{
@@ -47,8 +49,10 @@ class Game{
             if(countColumns === columnsLength){
                 row.fill("0");
                 howManylines++;
+                startingline = i;
             }
             countColumns = 0;
+            i--;
         });
 
         // To shift the blockArray down 
@@ -59,7 +63,7 @@ class Game{
             // Create a new array of the same size as a place holder
             let shiftedArr = blocksArray.map((subArray) => subArray.slice());
 
-            for(let i = 0; i < rows - howManylines; i++){
+            for(let i = 0; i < rows - (howManylines + startingline); i++){
                 for(let k = 0; k < cols; k++){
                     shiftedArr[i + howManylines][k] = blocksArray[i][k];
                 }
