@@ -166,11 +166,10 @@ class Tetromino{
         for(let i = 0; i < this.currentTetromino.length; i++){
             for(let k = 0; k < this.currentTetromino[i].length; k++){
                 if(this.currentTetromino[i][k] !== "0"){
-                    //let tetrominoY = i + this.y;
+                    let tetrominoY = i + this.y;
                     let tetrominoX = k + this.x;
-                    // let futuretTetrominoY = tetrominoY + 1; 
                     let futuretTetrominoX = tetrominoX - 1;
-                    if(futuretTetrominoX < 0){
+                    if(futuretTetrominoX < 0 || this.gameContainer.blocksArray[tetrominoY][futuretTetrominoX] !== "0"){
                         return false; 
                     }
                 }
@@ -182,11 +181,10 @@ class Tetromino{
         for(let i = 0; i < this.currentTetromino.length; i++){
             for(let k = 0; k < this.currentTetromino[i].length; k++){
                 if(this.currentTetromino[i][k] !== "0"){
-                    //let tetrominoY = i + this.y;
+                    let tetrominoY = i + this.y;
                     let tetrominoX = k + this.x;
-                    // let futuretTetrominoY = tetrominoY + 1; 
                     let futuretTetrominoX = tetrominoX + 1;
-                    if(futuretTetrominoX >= this.gameContainer.columnsLength){
+                    if(futuretTetrominoX >= this.gameContainer.columnsLength || this.gameContainer.blocksArray[tetrominoY][futuretTetrominoX] !== "0"){
                         return false; 
                     }
                 }
@@ -194,7 +192,9 @@ class Tetromino{
         }
         return true;
     }
-    
+    canRotate(){
+
+    }
     rotateTetroino(){
         const numRows = this.currentTetromino.length; 
         const numCols = this.currentTetromino[0].length;
