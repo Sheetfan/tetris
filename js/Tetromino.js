@@ -54,11 +54,11 @@ class Tetromino{
         "purple",
         "red"
     ];
-    constructor(game){
-        this.makeNewTetromio(game);
+    constructor(gameContainer){
+        this.makeNewTetromio(gameContainer);
     }
-    makeNewTetromio(game){
-        this.game = game;
+    makeNewTetromio(gameContainer){
+        this.gameContainer = gameContainer;
         let random = Tetromino.tetrominos[Math.floor(Math.random() * 7)];
         this.currentTetromino = random.map((subArray) => subArray.slice());
         this.x = 3;
@@ -153,7 +153,7 @@ class Tetromino{
         this.x--;
     }
     updateTetromino(){
-        let {gridArray} =  this.game.gameContainer;
+        let {gridArray} =  this.gameContainer;
         for(let i = 0; i < this.currentTetromino.length; i++){
             for(let k = 0; k < this.currentTetromino[i].length; k++){
                 if(this.currentTetromino[i][k] !== "0"){
