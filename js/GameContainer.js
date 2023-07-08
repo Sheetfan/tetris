@@ -118,7 +118,7 @@ class GameContainer{
 
     update(){
         this.clearGridArray();
-        this.tetromino.updateTetromino();
+        this.tetromino.update();
         this.tetrominoCollision();
     }
 

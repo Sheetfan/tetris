@@ -46,13 +46,13 @@ class Tetromino{
         
     ];
     static tetrominosColour = [
-        "cyan",
-        "blue",
-        "orange",
-        "yellow",
-        "green",
-        "purple",
-        "red"
+        "cyan", //I
+        "blue", //J
+        "orange", //L
+        "yellow", //O
+        "green", //S
+        "purple", //T
+        "red" //Z
     ];
     constructor(gameContainer){
         this.makeNewTetromio(gameContainer);
@@ -62,10 +62,7 @@ class Tetromino{
         let random = Tetromino.tetrominos[Math.floor(Math.random() * 7)];
         this.currentTetromino = random.map((subArray) => subArray.slice());
         this.x = 3;
-        this.y = 0;
-        // this.futurex = 0;
-        // this.futurey = 0;
-        
+        this.y = 0;        
         this.timeoutid = 0;
         this.movementDownId = setInterval(this.moveDown.bind(this), 1000);
         this.horizontalMovementId = 0;
@@ -134,10 +131,6 @@ class Tetromino{
     }
     moveDown(){
         this.y++;
-        // for(let i = 0; i < this.game.gameContainer.gridArray.length; i++){
-        //     console.log(this.game.gameContainer.blocksArray);
-        // }
-        // console.log(" ");
     }
     stopMoveingDown(){
         window.removeEventListener("keydown", this.refmovement);
@@ -147,10 +140,16 @@ class Tetromino{
         clearInterval(this.movementDownId);
     }
     moveRight(){
-        this.x++;
+        if(this.canMoveRight()){
+            this.x++;
+        }
+        
     }
     moveLeft(){
-        this.x--;
+        if(this.canMoveLeft()){
+            this.x--;
+        }
+        
     }
     updateTetromino(){
         let {gridArray} =  this.gameContainer;
@@ -162,6 +161,40 @@ class Tetromino{
             }
         } 
     }
+
+    canMoveLeft(){
+        for(let i = 0; i < this.currentTetromino.length; i++){
+            for(let k = 0; k < this.currentTetromino[i].length; k++){
+                if(this.currentTetromino[i][k] !== "0"){
+                    //let tetrominoY = i + this.y;
+                    let tetrominoX = k + this.x;
+                    // let futuretTetrominoY = tetrominoY + 1; 
+                    let futuretTetrominoX = tetrominoX - 1;
+                    if(futuretTetrominoX < 0){
+                        return false; 
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    canMoveRight(){
+        for(let i = 0; i < this.currentTetromino.length; i++){
+            for(let k = 0; k < this.currentTetromino[i].length; k++){
+                if(this.currentTetromino[i][k] !== "0"){
+                    //let tetrominoY = i + this.y;
+                    let tetrominoX = k + this.x;
+                    // let futuretTetrominoY = tetrominoY + 1; 
+                    let futuretTetrominoX = tetrominoX + 1;
+                    if(futuretTetrominoX >= this.gameContainer.columnsLength){
+                        return false; 
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    
     rotateTetroino(){
         const numRows = this.currentTetromino.length; 
         const numCols = this.currentTetromino[0].length;
