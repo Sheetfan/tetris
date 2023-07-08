@@ -163,35 +163,42 @@ class Tetromino{
     }
 
     canMoveLeft(){
+        let futureTetrominoPos = this.futureTetrominoPos(-1,0);
+        for(let i = 0; i < futureTetrominoPos.length; i++){
+            let {futuretX,futuretY} = futureTetrominoPos[i]; 
+            if(futuretX < 0 || this.gameContainer.blocksArray[futuretY][futuretX] !== "0"){
+                return false; 
+            }
+        }
+        return true;
+    }
+    futureTetrominoPos(diffX,diffy){
+        let futureTetrominoPos = [];
         for(let i = 0; i < this.currentTetromino.length; i++){
             for(let k = 0; k < this.currentTetromino[i].length; k++){
                 if(this.currentTetromino[i][k] !== "0"){
                     let tetrominoY = i + this.y;
                     let tetrominoX = k + this.x;
-                    let futuretTetrominoX = tetrominoX - 1;
-                    if(futuretTetrominoX < 0 || this.gameContainer.blocksArray[tetrominoY][futuretTetrominoX] !== "0"){
-                        return false; 
-                    }
+                    let futuretX = tetrominoX + diffX;
+                    let futuretY = tetrominoY + diffy;
+                    futureTetrominoPos.push({futuretX, futuretY});
+
                 }
             }
         }
-        return true;
+        return futureTetrominoPos;
     }
     canMoveRight(){
-        for(let i = 0; i < this.currentTetromino.length; i++){
-            for(let k = 0; k < this.currentTetromino[i].length; k++){
-                if(this.currentTetromino[i][k] !== "0"){
-                    let tetrominoY = i + this.y;
-                    let tetrominoX = k + this.x;
-                    let futuretTetrominoX = tetrominoX + 1;
-                    if(futuretTetrominoX >= this.gameContainer.columnsLength || this.gameContainer.blocksArray[tetrominoY][futuretTetrominoX] !== "0"){
-                        return false; 
-                    }
-                }
+        let futureTetrominoPos = this.futureTetrominoPos(1,0);
+        for(let i = 0; i < futureTetrominoPos.length; i++){
+            let {futuretX,futuretY} = futureTetrominoPos[i]; 
+            if(futuretX >= this.gameContainer.columnsLength || this.gameContainer.blocksArray[futuretY][futuretX] !== "0"){
+                return false; 
             }
         }
         return true;
     }
+    
     canRotate(){
 
     }

@@ -54,30 +54,20 @@ class GameContainer{
         }
     }
     tetrominoCollision(){
-        let flag = false;
-        let {currentTetromino,y,x} = this.tetromino;
-        //let {rowLength,blocksArray} = this.gameContainer;
-        for(let i = 0; i < currentTetromino.length; i++){
-            for(let k = 0; k < currentTetromino[i].length; k++){
-                if(currentTetromino[i][k] !== "0"){
-                    let tetrominoY = i + y;
-                    let tetrominoX = k + x;
-                    let futuretTetrominoY = tetrominoY  + 1; 
-                    if(futuretTetrominoY >= this.rowLength || this.blocksArray[futuretTetrominoY][tetrominoX] !== "0"){
-                        this.tetromino.stopMoveingDown();
-                        this.addToBlocksArray();
-                        this.tetromino.makeNewTetromio(this);
-                        this.checkTetris();
-                        flag = true;
-                        break;
-                    }
-                }
-            }
-            if (flag){
+        let futureTetrominoPos = this.tetromino.futureTetrominoPos(0,1);
+        for(let i = 0; i < futureTetrominoPos.length; i++){
+            let {futuretX,futuretY} = futureTetrominoPos[i]; 
+            if(futuretY >= this.rowLength || this.blocksArray[futuretY][futuretX] !== "0"){
+                this.tetromino.stopMoveingDown();
+                this.addToBlocksArray();
+                this.tetromino.makeNewTetromio(this);
+                this.checkTetris();
                 break;
             }
         }
     }
+        
+    
     checkTetris(){
         let countColumns = 0;
         let howManylines = 0; // To track how many row to shift down by
