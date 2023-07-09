@@ -153,12 +153,10 @@ class Tetromino{
     }
     updateTetromino(){
         let {gridArray} =  this.gameContainer;
-        for(let i = 0; i < this.currentTetromino.length; i++){
-            for(let k = 0; k < this.currentTetromino[i].length; k++){
-                if(this.currentTetromino[i][k] !== "0"){
-                    gridArray[this.y + i][this.x + k] = this.currentTetromino[i][k];
-                }
-            }
+        let futureTetrominoPos = this.futureTetrominoPos(0,0);
+        for(let i = 0; i < futureTetrominoPos.length; i++){
+            let {futuretX ,futuretY} = futureTetrominoPos[i];
+            gridArray[futuretY][futuretX] = this.currentTetromino[futuretY - this.y][futuretX - this.x];
         } 
     }
 
@@ -182,7 +180,6 @@ class Tetromino{
                     let futuretX = tetrominoX + diffX;
                     let futuretY = tetrominoY + diffy;
                     futureTetrominoPos.push({futuretX, futuretY});
-
                 }
             }
         }
@@ -198,27 +195,64 @@ class Tetromino{
         }
         return true;
     }
-    
     canRotate(){
-
-    }
-    rotateTetroino(){
         const numRows = this.currentTetromino.length; 
         const numCols = this.currentTetromino[0].length;
+        let array = this.currentTetromino.map((subArray) => subArray.slice());
+        let futureRotatePos = [];
         //for square matrix
         if(numRows === numCols){
             // Transpose the array
             for (let i = 0; i < numRows; i++) {
                 for (let j = i + 1; j < numCols; j++) {
-                    [this.currentTetromino[i][j], this.currentTetromino[j][i]] = [this.currentTetromino[j][i], this.currentTetromino[i][j]];
+                    [array[i][j], array[j][i]] = [array[j][i], array[i][j]];
                 }
             }
 
             // Reverse each row
             for (let i = 0; i < numRows; i++) {
-                this.currentTetromino[i].reverse();
+                array[i].reverse();
+            }
+            for (let i = 0; i < numRows; i++) {
+                for (let k = 0; k < numCols; k++) {
+                    if(array[i][k] !== "0"){
+                        let tetrominoY = i + this.y;
+                        let tetrominoX = k + this.x;
+                        futureRotatePos.push({tetrominoX,tetrominoY});
+                    }
+                }
+            }
+            for(let i = 0; i < futureRotatePos.length; i++){
+                let {tetrominoX,tetrominoY} = futureRotatePos[i]; 
+                if(tetrominoX >= this.gameContainer.columnsLength || tetrominoX < 0 ||
+                    tetrominoY >= this.rowLength || this.gameContainer.blocksArray[tetrominoY][tetrominoX] !== "0"){
+                    return false; 
+                }
             }
         }
+        
+        return true;
+    }
+    rotateTetroino(){
+        if(this.canRotate()){
+            const numRows = this.currentTetromino.length; 
+            const numCols = this.currentTetromino[0].length;
+            //for square matrix
+            if(numRows === numCols){
+                // Transpose the array
+                for (let i = 0; i < numRows; i++) {
+                    for (let k = i + 1; k < numCols; k++) {
+                        [this.currentTetromino[i][k], this.currentTetromino[k][i]] = [this.currentTetromino[k][i], this.currentTetromino[i][k]];
+                    }
+                }
+
+                // Reverse each row
+                for (let i = 0; i < numRows; i++) {
+                    this.currentTetromino[i].reverse();
+                }
+            }
+        }
+    
         // this.updateTetromino();
     }
 
