@@ -62,8 +62,12 @@ class Tetromino{
         let random = Tetromino.tetrominos[Math.floor(Math.random() * 7)];
         this.currentTetromino = random.map((subArray) => subArray.slice());
         this.x = 3;
-        this.y = 0;        
+        this.y = 0;   
+
+        this.canDownBool = true;
         this.timeoutid = 0;
+        this.lockTimeid = 0;
+        this.lockTimeidSet = false;
         this.movementDownId = setInterval(this.moveDown.bind(this), 1000);
         this.horizontalMovementId = 0;
         this.isKeyPressed = false;
@@ -130,9 +134,11 @@ class Tetromino{
         }
     }
     moveDown(){
-        this.y++;
+        if(this.canDownBool){
+            this.y++;
+        }
     }
-    stopMoveingDown(){
+    stopMoving(){
         window.removeEventListener("keydown", this.refmovement);
         window.removeEventListener("keyup", this.refmovementUp);
         clearTimeout(this.timeoutid);
@@ -159,7 +165,12 @@ class Tetromino{
             gridArray[futuretY][futuretX] = this.currentTetromino[futuretY - this.y][futuretX - this.x];
         } 
     }
-
+    setTetromino(){
+        this.stopMoving();
+        this.gameContainer.addToBlocksArray();
+        this.gameContainer.checkTetris();
+        this.makeNewTetromio(this.gameContainer);
+    }
     canMoveLeft(){
         let futureTetrominoPos = this.futureTetrominoPos(-1,0);
         for(let i = 0; i < futureTetrominoPos.length; i++){
@@ -193,6 +204,26 @@ class Tetromino{
                 return false; 
             }
         }
+        return true;
+    }
+    canMoveDown(){
+        let futureTetrominoPos = this.futureTetrominoPos(0,1);
+        for(let i = 0; i < futureTetrominoPos.length; i++){
+            let {futuretX,futuretY} = futureTetrominoPos[i]; 
+            if(futuretY >= this.gameContainer.rowLength || this.gameContainer.blocksArray[futuretY][futuretX] !== "0"){
+                //clearInterval(this.movementDownId);
+                if(!this.lockTimeidSet){
+                    this.lockTimeid = setTimeout(this.setTetromino.bind(this),500);
+                    this.lockTimeidSet = true;
+                }
+                
+                //this.setTetromino();
+                return false;
+            }
+        }
+
+        clearTimeout(this.lockTimeid);
+        this.lockTimeidSet =false;
         return true;
     }
     canRotate(){
@@ -258,6 +289,7 @@ class Tetromino{
 
     update(){      
         this.updateTetromino();
+        this.canDownBool = this.canMoveDown();
     }
 
     draw(){
