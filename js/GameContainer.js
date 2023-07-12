@@ -12,8 +12,29 @@ class GameContainer{
         this.clearGridArray();
 
         // Will save all the placed block positions
-        this.blocksArray = [];
-        this.clearBlocksArray();
+        this.blocksArray = [
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["0","0","0","0","0","0","0","0","0","0"],
+            ["1","1","1","1","1","1","1","1","1","0"],
+            ["0","1","0","1","1","1","1","1","1","0"],
+            ["1","1","1","1","1","1","1","1","1","0"],
+            ["1","1","1","1","1","1","1","1","1","0"]
+        ];
+        //this.clearBlocksArray();
 
         this.height = this.blockSize * this.rowLength;
         this.width = this.blockSize * this.columnsLength;
@@ -67,44 +88,63 @@ class GameContainer{
     //         }
     //     }
     // }
-    checkTetris(){
-        let countColumns = 0;
-        let howManylines = 0; // To track how many row to shift down by
-        let startingline = 0;
-        let i = this.rowLength - 1;
+    // checkTetris(){
+    //     let countColumns = 0;
+    //     let howManylines = 0; // To track how many row to shift down by
+    //     let startingline = 0;
+    //     let i = this.rowLength - 1;
 
-        this.blocksArray.forEach(row =>{
-            row.forEach(block =>{
-                if(block !== "0"){
-                    countColumns++;
-                }
-            })
-            if(countColumns === this.columnsLength){
-                row.fill("0");
-                howManylines++;
-                startingline = i;
-            }
-            countColumns = 0;
-            i--;
-        });
+    //     this.blocksArray.forEach(row =>{
+    //         row.forEach(block =>{
+    //             if(block !== "0"){
+    //                 countColumns++;
+    //             }
+    //         })
+    //         if(countColumns === this.columnsLength){
+    //             row.fill("0");
+    //             howManylines++;
+    //             startingline = i;
+    //         }
+    //         countColumns = 0;
+    //         i--;
+    //     });
 
-        // To shift the blockArray down 
-        if(howManylines > 0){
-            const rows = this.rowLength;
-            const cols = this.columnsLength;
+    //     // To shift the blockArray down 
+    //     if(howManylines > 0){
+    //         const rows = this.rowLength;
+    //         const cols = this.columnsLength;
           
-            // Create a new array of the same size as a place holder
-            let shiftedArr = this.blocksArray.map((subArray) => subArray.slice());
+    //         // Create a new array of the same size as a place holder
+    //         let shiftedArr = this.blocksArray.map((subArray) => subArray.slice());
 
-            for(let i = 0; i < rows - (howManylines + startingline); i++){
-                for(let k = 0; k < cols; k++){
-                    shiftedArr[i + howManylines][k] = this.blocksArray[i][k];
-                }
+    //         for(let i = 0; i < rows - (howManylines + startingline); i++){
+    //             for(let k = 0; k < cols; k++){
+    //                 shiftedArr[i + howManylines][k] = this.blocksArray[i][k];
+    //             }
+    //         }
+    //         this.blocksArray = shiftedArr;
+    //     }
+    // }
+    clearLines(){
+        let clearedGrid = [];
+        let rowsCleared = 0;
+        
+        for (let row = this.rowLength - 1; row >= 0; row--) {
+            if ( this.blocksArray[row].every(cell => cell !== "0")) {
+                rowsCleared++;
+            } 
+            else {
+                clearedGrid.unshift(this.blocksArray[row]);
             }
-            this.blocksArray = shiftedArr;
         }
+        
+        for (let i = 0; i < rowsCleared; i++) {
+            clearedGrid.unshift(Array(this.columnsLength).fill("0"));
+        }
+        
+        this.blocksArray = clearedGrid;
+          
     }
-
     update(){
         this.clearGridArray();
         this.tetromino.update();

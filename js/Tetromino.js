@@ -59,22 +59,24 @@ class Tetromino{
     }
     makeNewTetromio(gameContainer){
         this.gameContainer = gameContainer;
-        let random = Tetromino.tetrominos[Math.floor(Math.random() * 7)];
+        // let random = Tetromino.tetrominos[Math.floor(Math.random() * 7)];
+        let random = Tetromino.tetrominos[0];
         this.currentTetromino = random.map((subArray) => subArray.slice());
         this.x = 3;
         this.y = 0;   
 
-        this.timerOutinterval = 100;
-        this.horizontalInterval = 100;
-        this.defaultdownInterval = 1000;
-        this.downInterval = 50;
+        this.holdDelayinterval = 100;
+        this.horizontalInterval = 100; // The rate at which the tetromino moves left or right
+        this.defaultdownInterval = 1000; // The default rate at which the tetromino move down
+        this.downInterval = 50; // the rate at which the tetromino will move down when the down button is held
 
-        this.canDownBool = true;
+        this.movementDownId = setInterval(this.moveDown.bind(this), this.defaultdownInterval);
         this.timeoutid = 0;
         this.lockTimeid = 0;
-        this.lockTimeidSet = false;
-        this.movementDownId = setInterval(this.moveDown.bind(this), this.defaultdownInterval);
         this.horizontalMovementId = 0;
+
+        this.lockTimeidSet = false;
+        this.canDownBool = true;
         this.isKeyPressed = false;
         this.isKeyPressedhorizontal = false;
         this.refmovement = this.movement.bind(this);
@@ -88,7 +90,7 @@ class Tetromino{
             //     return; // Do nothing if the event was already processed
             // }
 
-        // Spins the tetroino
+        // Spins the tetroino clockwise
         if((e.key === "Up" || e.key === "ArrowUp") && !this.isKeyPressed){
             this.rotateTetroino();
             this.isKeyPressed = true;
@@ -105,17 +107,19 @@ class Tetromino{
         // Moves the tetroino to the left
         if((e.key === "Left" || e.key === "ArrowLeft") && !this.isKeyPressedhorizontal){
             this.moveLeft();
+            // start the delay
             this.timeoutid = setTimeout(() => {
                 this.horizontalMovementId = setInterval(this.moveLeft.bind(this), this.horizontalInterval);
-            },this.timerOutinterval);
+            },this.holdDelayinterval);
             this.isKeyPressedhorizontal = true;
         }
         // Moves the tetroino to the right
         else if((e.key === "Right" || e.key === "ArrowRight") && !this.isKeyPressedhorizontal){
             this.moveRight();
+            // start the delay
             this.timeoutid = setTimeout(() => {
                 this.horizontalMovementId = setInterval(this.moveRight.bind(this),  this.horizontalInterval);
-            },this.timerOutinterval);
+            },this.holdDelayinterval);
             this.isKeyPressedhorizontal = true;
         }
     }
@@ -170,7 +174,7 @@ class Tetromino{
     setTetromino(){
         this.stopMoving();
         this.gameContainer.addToBlocksArray();
-        this.gameContainer.checkTetris();
+        this.gameContainer.clearLines();
         this.makeNewTetromio(this.gameContainer);
     }
     canMoveLeft(){
@@ -213,6 +217,7 @@ class Tetromino{
         for(let i = 0; i < futureTetrominoPos.length; i++){
             let {futuretX,futuretY} = futureTetrominoPos[i]; 
             if(futuretY >= this.gameContainer.rowLength || this.gameContainer.blocksArray[futuretY][futuretX] !== "0"){
+                // Start the lock timer
                 clearInterval(this.movementDownId);
                 if(!this.lockTimeidSet){
                     this.lockTimeid = setTimeout(this.setTetromino.bind(this),500);
@@ -291,8 +296,6 @@ class Tetromino{
                 }
             }
         }
-    
-        // this.updateTetromino();
     }
 
     update(){      
