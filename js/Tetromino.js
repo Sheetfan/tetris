@@ -64,11 +64,16 @@ class Tetromino{
         this.x = 3;
         this.y = 0;   
 
+        this.timerOutinterval = 100;
+        this.horizontalInterval = 100;
+        this.defaultdownInterval = 1000;
+        this.downInterval = 50;
+
         this.canDownBool = true;
         this.timeoutid = 0;
         this.lockTimeid = 0;
         this.lockTimeidSet = false;
-        this.movementDownId = setInterval(this.moveDown.bind(this), 1000);
+        this.movementDownId = setInterval(this.moveDown.bind(this), this.defaultdownInterval);
         this.horizontalMovementId = 0;
         this.isKeyPressed = false;
         this.isKeyPressedhorizontal = false;
@@ -78,9 +83,6 @@ class Tetromino{
         window.addEventListener("keyup", this.refmovementUp);
     }
     movement(e){
-        const timerOutinterval = 100;
-        const horizontalInterval = 100;
-        const downInterval = 50;
             // if (e.defaultPrevented) {
             //     this.isKeyPressed = true;
             //     return; // Do nothing if the event was already processed
@@ -96,7 +98,7 @@ class Tetromino{
         if((e.key === "Down" || e.key === "ArrowDown") && !this.isKeyPressed){
             clearInterval(this.movementDownId);
             this.moveDown();
-            this.movementDownId = setInterval(this.moveDown.bind(this), downInterval);
+            this.movementDownId = setInterval(this.moveDown.bind(this), this.downInterval);
             this.isKeyPressed = true;
         }
     
@@ -104,16 +106,16 @@ class Tetromino{
         if((e.key === "Left" || e.key === "ArrowLeft") && !this.isKeyPressedhorizontal){
             this.moveLeft();
             this.timeoutid = setTimeout(() => {
-                this.horizontalMovementId = setInterval(this.moveLeft.bind(this), horizontalInterval);
-            },timerOutinterval);
+                this.horizontalMovementId = setInterval(this.moveLeft.bind(this), this.horizontalInterval);
+            },this.timerOutinterval);
             this.isKeyPressedhorizontal = true;
         }
         // Moves the tetroino to the right
         else if((e.key === "Right" || e.key === "ArrowRight") && !this.isKeyPressedhorizontal){
             this.moveRight();
             this.timeoutid = setTimeout(() => {
-                this.horizontalMovementId = setInterval(this.moveRight.bind(this),  horizontalInterval);
-            },timerOutinterval);
+                this.horizontalMovementId = setInterval(this.moveRight.bind(this),  this.horizontalInterval);
+            },this.timerOutinterval);
             this.isKeyPressedhorizontal = true;
         }
     }
@@ -124,7 +126,7 @@ class Tetromino{
         if((e.key === "Down" || e.key === "ArrowDown") && this.isKeyPressed) {
             this.isKeyPressed = false;
             clearInterval(this.movementDownId);
-            this.movementDownId = setInterval(this.moveDown.bind(this), 1000);
+            this.movementDownId = setInterval(this.moveDown.bind(this),this.defaultdownInterval);
         }
         if((e.key === "Left" || e.key === "ArrowLeft" || e.key === "Right" || e.key === "ArrowRight")
                 && this.isKeyPressedhorizontal){
@@ -211,17 +213,23 @@ class Tetromino{
         for(let i = 0; i < futureTetrominoPos.length; i++){
             let {futuretX,futuretY} = futureTetrominoPos[i]; 
             if(futuretY >= this.gameContainer.rowLength || this.gameContainer.blocksArray[futuretY][futuretX] !== "0"){
-                //clearInterval(this.movementDownId);
+                clearInterval(this.movementDownId);
                 if(!this.lockTimeidSet){
                     this.lockTimeid = setTimeout(this.setTetromino.bind(this),500);
                     this.lockTimeidSet = true;
                 }
-                
-                //this.setTetromino();
                 return false;
             }
         }
-
+        //resets the timer for the tetro moving down
+        if(this.lockTimeidSet){
+            if(this.isKeyPressed){
+                this.movementDownId = setInterval(this.moveDown.bind(this), this.downInterval);
+            }
+            else{
+                this.movementDownId = setInterval(this.moveDown.bind(this), this.defaultdownInterval);
+            }
+        }
         clearTimeout(this.lockTimeid);
         this.lockTimeidSet =false;
         return true;
