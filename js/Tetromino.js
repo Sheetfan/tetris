@@ -57,13 +57,18 @@ class Tetromino{
     constructor(gameContainer){
         this.makeNewTetromio(gameContainer);
     }
+
     makeNewTetromio(gameContainer){
         this.gameContainer = gameContainer;
-        // let random = Tetromino.tetrominos[Math.floor(Math.random() * 7)];
-        let random = Tetromino.tetrominos[0];
+        let index = 1;
+        // let index = Math.floor(Math.random() * 7);
+        let random = Tetromino.tetrominos[index];
+
         this.currentTetromino = random.map((subArray) => subArray.slice());
+        this.currentShape = this.whatShape(index);
         this.x = 3;
         this.y = 0;   
+        this.rotation = 0;
 
         this.holdDelayinterval = 100;
         this.horizontalInterval = 100; // The rate at which the tetromino moves left or right
@@ -83,6 +88,24 @@ class Tetromino{
         this.refmovementUp = this.movementButtonUp.bind(this);
         window.addEventListener("keydown",this.refmovement);
         window.addEventListener("keyup", this.refmovementUp);
+    }
+    whatShape(index){
+        switch(index){
+            case 0:
+                return 'i';
+            case 1:
+                return 'j';
+            case 2:
+                return 'l';
+            case 3:
+                return 'o';
+            case 4:
+                return's';
+            case 5:
+                return 't';
+            case 6:
+                return 'z';
+        }
     }
     movement(e){
             // if (e.defaultPrevented) {
@@ -165,7 +188,7 @@ class Tetromino{
     }
     updateTetromino(){
         let {gridArray} =  this.gameContainer;
-        let futureTetrominoPos = this.futureTetrominoPos(0,0);
+        let futureTetrominoPos = this.futureTetrominoPos(this.currentTetromino,0,0);
         for(let i = 0; i < futureTetrominoPos.length; i++){
             let {futuretX ,futuretY} = futureTetrominoPos[i];
             gridArray[futuretY][futuretX] = this.currentTetromino[futuretY - this.y][futuretX - this.x];
@@ -178,7 +201,7 @@ class Tetromino{
         this.makeNewTetromio(this.gameContainer);
     }
     canMoveLeft(){
-        let futureTetrominoPos = this.futureTetrominoPos(-1,0);
+        let futureTetrominoPos = this.futureTetrominoPos(this.currentTetromino,-1,0);
         for(let i = 0; i < futureTetrominoPos.length; i++){
             let {futuretX,futuretY} = futureTetrominoPos[i]; 
             if(futuretX < 0 || this.gameContainer.blocksArray[futuretY][futuretX] !== "0"){
@@ -187,11 +210,11 @@ class Tetromino{
         }
         return true;
     }
-    futureTetrominoPos(diffX,diffy){
+    futureTetrominoPos(tetromino,diffX,diffy){
         let futureTetrominoPos = [];
-        for(let i = 0; i < this.currentTetromino.length; i++){
-            for(let k = 0; k < this.currentTetromino[i].length; k++){
-                if(this.currentTetromino[i][k] !== "0"){
+        for(let i = 0; i < tetromino.length; i++){
+            for(let k = 0; k < tetromino[i].length; k++){
+                if(tetromino[i][k] !== "0"){
                     let tetrominoY = i + this.y;
                     let tetrominoX = k + this.x;
                     let futuretX = tetrominoX + diffX;
@@ -203,7 +226,7 @@ class Tetromino{
         return futureTetrominoPos;
     }
     canMoveRight(){
-        let futureTetrominoPos = this.futureTetrominoPos(1,0);
+        let futureTetrominoPos = this.futureTetrominoPos(this.currentTetromino,1,0);
         for(let i = 0; i < futureTetrominoPos.length; i++){
             let {futuretX,futuretY} = futureTetrominoPos[i]; 
             if(futuretX >= this.gameContainer.columnsLength || this.gameContainer.blocksArray[futuretY][futuretX] !== "0"){
@@ -213,7 +236,7 @@ class Tetromino{
         return true;
     }
     canMoveDown(){
-        let futureTetrominoPos = this.futureTetrominoPos(0,1);
+        let futureTetrominoPos = this.futureTetrominoPos(this.currentTetromino,0,1);
         for(let i = 0; i < futureTetrominoPos.length; i++){
             let {futuretX,futuretY} = futureTetrominoPos[i]; 
             if(futuretY >= this.gameContainer.rowLength || this.gameContainer.blocksArray[futuretY][futuretX] !== "0"){
@@ -239,17 +262,135 @@ class Tetromino{
         this.lockTimeidSet =false;
         return true;
     }
-    canRotate(){
+    superRotationSystem(tetromino){
+        let futureRotation = this.rotation + 1;
+        let futurePos = {
+            x:0,
+            y:0
+        }
+        let kickData = []; //All kickData to test
+        if(futureRotation > 3){
+            futureRotation= 0;
+        }
+        let canRotateflag = false;
+        if(this.currentShape !== "i"){
+            switch (futureRotation){
+                case 0:
+                    kickData = [
+                        {x:0,y:0},
+                        {x:-1,y:0},
+                        {x:-1,y:1},
+                        {x:0,y:-2},
+                        {x:-1,y:-2},
+                    ]; 
+                    break;
+                case 1:
+                    kickData = [
+                        {x:0,y:0},
+                        {x:-1,y:0},
+                        {x:-1,y:-1},
+                        {x:0,y:+2},
+                        {x:-1,y:2},
+                    ];
+                    break;
+                case 2:
+                    kickData = [
+                        {x:0,y:0},
+                        {x:1,y:0},
+                        {x:1,y:1},
+                        {x:0,y:-2},
+                        {x:1,y:-2},
+                    ];
+                    break;
+                case 3:
+                    kickData = [
+                        {x:0,y:0},
+                        {x:1,y:0},
+                        {x:1,y:-1},
+                        {x:0,y:2},
+                        {x:1,y:2},
+                    ];
+                    break;
+            }
+        }
+        else{
+            switch (futureRotation){
+                case 0:
+                    kickData = [
+                        {x:0,y:0},
+                        {x:1,y:0},
+                        {x:-2,y:0},
+                        {x:1,y:2},
+                        {x:-2,y:-1},
+                    ];
+                    break;
+                case 1:
+                    kickData = [
+                        {x:0,y:0},
+                        {x:-2,y:0},
+                        {x:1,y:-0},
+                        {x:-2,y:1},
+                        {x:1,y:-2},
+                    ];
+                    break;
+                case 2:
+                    kickData = [
+                        {x:0,y:0},
+                        {x:-1,y:0},
+                        {x:2,y:0},
+                        {x:-1,y:-2},
+                        {x:2,y:1},
+                    ];
+                    break;
+                case 3:
+                    kickData = [
+                        {x:0,y:0},
+                        {x:2,y:0},
+                        {x:-1,y:0},
+                        {x:2,y:-1},
+                        {x:-1,y:2},
+                    ];
+                    break;
+            }
+        }
+        for(let i = 0; i < kickData.length; i++){
+            let tests = this.futureTetrominoPos(tetromino,kickData[i].x,kickData[i].y);
+            let counter = 0;
+            for(let k = 0; k < tests.length; k++){
+                if(tests[k].futuretX < this.gameContainer.columnsLength && tests[k].futuretX >= 0 && tests[k].futuretY < this.gameContainer.rowLength){
+                    if(this.gameContainer.blocksArray[tests[k].futuretY][tests[k].futuretX] === "0"){
+                        counter++;
+                    } 
+                }
+            }
+
+            if(counter === tests.length){
+                canRotateflag = true;
+                futurePos = kickData[i];
+                break;
+            }
+            
+        }
+        if(canRotateflag){
+            this.x += futurePos.x;
+            this.y += futurePos.y;
+            this.rotation = futureRotation;
+            return tetromino;
+        }
+        else{
+            return this.currentTetromino;
+        }
+    }
+    rotateTetroino(){
         const numRows = this.currentTetromino.length; 
         const numCols = this.currentTetromino[0].length;
         let array = this.currentTetromino.map((subArray) => subArray.slice());
-        let futureRotatePos = [];
         //for square matrix
         if(numRows === numCols){
             // Transpose the array
             for (let i = 0; i < numRows; i++) {
-                for (let j = i + 1; j < numCols; j++) {
-                    [array[i][j], array[j][i]] = [array[j][i], array[i][j]];
+                for (let k = i + 1; k < numCols; k++) {
+                    [array[i][k], array[k][i]] = [array[k][i],array[i][k]];
                 }
             }
 
@@ -257,45 +398,9 @@ class Tetromino{
             for (let i = 0; i < numRows; i++) {
                 array[i].reverse();
             }
-            for (let i = 0; i < numRows; i++) {
-                for (let k = 0; k < numCols; k++) {
-                    if(array[i][k] !== "0"){
-                        let tetrominoY = i + this.y;
-                        let tetrominoX = k + this.x;
-                        futureRotatePos.push({tetrominoX,tetrominoY});
-                    }
-                }
-            }
-            for(let i = 0; i < futureRotatePos.length; i++){
-                let {tetrominoX,tetrominoY} = futureRotatePos[i]; 
-                if(tetrominoX >= this.gameContainer.columnsLength || tetrominoX < 0 ||
-                    tetrominoY >= this.rowLength || this.gameContainer.blocksArray[tetrominoY][tetrominoX] !== "0"){
-                    return false; 
-                }
-            }
-        }
+            this.currentTetromino = this.superRotationSystem(array);
+        } 
         
-        return true;
-    }
-    rotateTetroino(){
-        if(this.canRotate()){
-            const numRows = this.currentTetromino.length; 
-            const numCols = this.currentTetromino[0].length;
-            //for square matrix
-            if(numRows === numCols){
-                // Transpose the array
-                for (let i = 0; i < numRows; i++) {
-                    for (let k = i + 1; k < numCols; k++) {
-                        [this.currentTetromino[i][k], this.currentTetromino[k][i]] = [this.currentTetromino[k][i], this.currentTetromino[i][k]];
-                    }
-                }
-
-                // Reverse each row
-                for (let i = 0; i < numRows; i++) {
-                    this.currentTetromino[i].reverse();
-                }
-            }
-        }
     }
 
     update(){      
