@@ -4,7 +4,8 @@ class Game{
         this.gameWidth = canvas.width;
         this.gameHeight = canvas.height;
         this.gameContainer = new GameContainer(this);
-        this.gameAssets = [this.gameContainer];
+        this.rightContainer = new rightContainer(this);
+        this.gameAssets = [this.gameContainer,this.rightContainer];
     }
     reset(){
         this.gameContainer = {};
