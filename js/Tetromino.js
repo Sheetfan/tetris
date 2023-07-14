@@ -52,7 +52,8 @@ class Tetromino{
         "yellow", //O
         "green", //S
         "purple", //T
-        "red" //Z
+        "red", //Z
+        "gray" //ghost piace
     ];
     constructor(gameContainer){
         this.makeNewTetromio(gameContainer);
@@ -180,6 +181,7 @@ class Tetromino{
             },this.holdDelayinterval);
             this.isKeyPressedhorizontal = true;
         }
+        // makes the tetroino hard drop
         if(e.key === " " && !this.isKeyPressed){
             this.hardDrop();
             this.isKeyPressed = true;
@@ -209,7 +211,6 @@ class Tetromino{
             for(let i = 0; i < futureTetrominoPos.length; i++){
                 let {futuretX,futuretY} = futureTetrominoPos[i]; 
                 if(futuretY >= this.gameContainer.rowLength || this.whichArray(futuretX,futuretY) !== "0"){
-
                     moveDown = false;
                     break;
                 }
@@ -244,10 +245,33 @@ class Tetromino{
     updateTetromino(){
         let {gridArray,bufferArray} = this.gameContainer;
         let futureTetrominoPos = this.futureTetrominoPos(this.currentTetromino,0,0);
-
+        let futureGhostTetromino = [];
+        let gHostY = 0;
+        let moveDown = true;
+        while(moveDown){
+            futureGhostTetromino = this.futureTetrominoPos(this.currentTetromino,0,gHostY);
+            for(let i = 0; i < futureGhostTetromino.length; i++){
+                let {futuretX,futuretY} = futureGhostTetromino[i]; 
+                if(futuretY >= this.gameContainer.rowLength || this.whichArray(futuretX,futuretY) !== "0"){
+                    moveDown = false;
+                    break;
+                }
+            }
+            if(moveDown){
+                gHostY++;
+            }
+        }
+        for(let i = 0; i < futureGhostTetromino.length; i++){
+            let {futuretX ,futuretY} = futureGhostTetromino[i];
+            if(futuretY - 1 >= 0){
+                gridArray[futuretY - 1][futuretX] = "8"; 
+            }
+            else{
+                bufferArray[bufferArray.length - 1 + futuretY][futuretX] = "8";
+            }
+        }
         for(let i = 0; i < futureTetrominoPos.length; i++){
             let {futuretX ,futuretY} = futureTetrominoPos[i];
-            let arrayPos = this.whichArray(futuretX,futuretY);
             if(futuretY >= 0){
                 gridArray[futuretY][futuretX] = this.currentTetromino[futuretY - this.y][futuretX - this.x]; 
             }
@@ -255,6 +279,8 @@ class Tetromino{
                 bufferArray[bufferArray.length + futuretY][futuretX] = this.currentTetromino[futuretY - this.y][futuretX - this.x];
             }
         } 
+
+        
     }
     setTetromino(){
         this.stopMoving();

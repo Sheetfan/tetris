@@ -170,6 +170,8 @@ class GameContainer{
                             case "7":
                                 ctx.fillStyle = Tetromino.tetrominosColour[6];
                                 break;
+                            case "8":
+                                ctx.fillStyle = Tetromino.tetrominosColour[7];
                         }
                         ctx.fillRect(this.x + (this.blockSize*k),this.y + (this.blockSize*i),this.blockSize,this.blockSize);
     
