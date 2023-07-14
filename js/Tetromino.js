@@ -180,9 +180,14 @@ class Tetromino{
             },this.holdDelayinterval);
             this.isKeyPressedhorizontal = true;
         }
+        if(e.key === " " && !this.isKeyPressed){
+            this.hardDrop();
+            this.isKeyPressed = true;
+            this.setTetromino();
+        }
     }
     movementButtonUp(e){
-        if((e.key === "Up" || e.key === "ArrowUp") && this.isKeyPressed){
+        if((e.key === "Up" || e.key === "ArrowUp" || e.key === "Space") && this.isKeyPressed){
             this.isKeyPressed = false;
         }
         if((e.key === "Down" || e.key === "ArrowDown") && this.isKeyPressed) {
@@ -195,6 +200,23 @@ class Tetromino{
             this.isKeyPressedhorizontal = false;
             clearTimeout(this.timeoutid);
             clearInterval(this.horizontalMovementId);
+        }
+    }
+    hardDrop(){
+        let moveDown = true;
+        while(moveDown){
+            let futureTetrominoPos = this.futureTetrominoPos(this.currentTetromino,0,1);
+            for(let i = 0; i < futureTetrominoPos.length; i++){
+                let {futuretX,futuretY} = futureTetrominoPos[i]; 
+                if(futuretY >= this.gameContainer.rowLength || this.whichArray(futuretX,futuretY) !== "0"){
+
+                    moveDown = false;
+                    break;
+                }
+            }
+            if(moveDown){
+                this.y++;
+            }
         }
     }
     moveDown(){
@@ -276,12 +298,12 @@ class Tetromino{
             let {futuretX,futuretY} = futureTetrominoPos[i]; 
             if(futuretY >= this.gameContainer.rowLength || this.whichArray(futuretX,futuretY) !== "0"){
                 // Start the lock timer
-            clearInterval(this.movementDownId);
-            if(!this.lockTimeidSet){
-                this.lockTimeid = setTimeout(this.setTetromino.bind(this),500);
-                this.lockTimeidSet = true;
-            }
-            return false;
+                clearInterval(this.movementDownId);
+                if(!this.lockTimeidSet){
+                    this.lockTimeid = setTimeout(this.setTetromino.bind(this),500);
+                    this.lockTimeidSet = true;
+                }
+                return false;
             }
         }
         //resets the timer for the tetro moving down
