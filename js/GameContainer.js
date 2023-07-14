@@ -5,8 +5,6 @@ class GameContainer{
         this.rowLength = 20;
         this.columnsLength = 10;
 
-        this.tetromino = new Tetromino(this);
-
         // Make the array tiles
         this.gridArray = [];
         this.clearGridArray();
@@ -14,27 +12,32 @@ class GameContainer{
         // Will save all the placed block positions
         // this.blocksArray = [
         //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
-        //     ["0","0","0","0","0","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
+        //     ["0","0","0","0","5","0","0","0","0","0"],
         //     ["1","1","1","1","1","0","0","0","1","0"],
         //     ["0","1","0","1","0","1","0","1","1","0"],
         //     ["1","1","1","1","1","1","0","1","1","0"],
         //     ["1","1","1","1","1","1","1","1","1","0"]
         // ];
+        this.blocksArray = [];
         this.clearBlocksArray();
+
+        // 
+        this.bufferArray = [];
+        this.clearBufferArray();
 
         this.height = this.blockSize * this.rowLength;
         this.width = this.blockSize * this.columnsLength;
@@ -42,8 +45,21 @@ class GameContainer{
         // Set screen to the middle
         this.x = (this.game.gameWidth - this.width) / 2;
         this.y = (this.game.gameHeight - this.height) / 2;
-    }
 
+        this.tetromino = new Tetromino(this);
+    }
+    isGameOver(){
+        let {currentTetromino,y,x} = this.tetromino;
+        let futureTetrominoPos = this.tetromino.futureTetrominoPos(currentTetromino,0,0);
+        let counter = 0;
+        for(let i = 0; i < futureTetrominoPos.length; i++){
+            let {futuretX,futuretY} = futureTetrominoPos[i];
+            if(futuretY < 0){
+                counter++;
+            }  
+        }
+        return futureTetrominoPos.length === counter;
+    }
     clearBlocksArray(){
         this.blocksArray = [];
         for(let i = 0; i < this.rowLength; i++){
@@ -64,67 +80,28 @@ class GameContainer{
             this.gridArray.push(row);
         }
     }
+
+    clearBufferArray(){
+        this.bufferArray = [];
+        for(let i = 0; i < this.rowLength; i++){
+            let row = [];
+            for(let k = 0; k < this.columnsLength; k++){
+                row.push("0");
+            }
+            this.bufferArray.push(row);
+        }
+    }
     addToBlocksArray(){
         let {currentTetromino,y,x} = this.tetromino;
-        for(let i = 0; i < currentTetromino.length; i++){
-            for(let k = 0; k < currentTetromino[i].length; k++){
-                if(currentTetromino[i][k] !== "0"){
-                    this.blocksArray[y + i][x + k] = currentTetromino[i][k];
-                }
-            }
+        let futureTetrominoPos = this.tetromino.futureTetrominoPos(currentTetromino,0,0);
+        for(let i = 0; i < futureTetrominoPos.length; i++){
+            let {futuretX,futuretY} = futureTetrominoPos[i];
+            if(futuretY >= 0){
+                this.blocksArray[futuretY][futuretX] = currentTetromino[futuretY - y][futuretX - x];
+            }  
         }
     }
 
-    // tetrominoCollision(){
-    //     let futureTetrominoPos = this.tetromino.futureTetrominoPos(0,1);
-    //     for(let i = 0; i < futureTetrominoPos.length; i++){
-    //         let {futuretX,futuretY} = futureTetrominoPos[i]; 
-    //         if(futuretY >= this.rowLength || this.blocksArray[futuretY][futuretX] !== "0"){
-    //             this.tetromino.stopMoveingDown();
-    //             this.addToBlocksArray();
-    //             this.tetromino.makeNewTetromio(this);
-    //             this.checkTetris();
-    //             break;
-    //         }
-    //     }
-    // }
-    // checkTetris(){
-    //     let countColumns = 0;
-    //     let howManylines = 0; // To track how many row to shift down by
-    //     let startingline = 0;
-    //     let i = this.rowLength - 1;
-
-    //     this.blocksArray.forEach(row =>{
-    //         row.forEach(block =>{
-    //             if(block !== "0"){
-    //                 countColumns++;
-    //             }
-    //         })
-    //         if(countColumns === this.columnsLength){
-    //             row.fill("0");
-    //             howManylines++;
-    //             startingline = i;
-    //         }
-    //         countColumns = 0;
-    //         i--;
-    //     });
-
-    //     // To shift the blockArray down 
-    //     if(howManylines > 0){
-    //         const rows = this.rowLength;
-    //         const cols = this.columnsLength;
-          
-    //         // Create a new array of the same size as a place holder
-    //         let shiftedArr = this.blocksArray.map((subArray) => subArray.slice());
-
-    //         for(let i = 0; i < rows - (howManylines + startingline); i++){
-    //             for(let k = 0; k < cols; k++){
-    //                 shiftedArr[i + howManylines][k] = this.blocksArray[i][k];
-    //             }
-    //         }
-    //         this.blocksArray = shiftedArr;
-    //     }
-    // }
     clearLines(){
         let clearedGrid = [];
         let rowsCleared = 0;
@@ -143,12 +120,11 @@ class GameContainer{
         }
         
         this.blocksArray = clearedGrid;
-          
     }
     update(){
         this.clearGridArray();
+        this.clearBufferArray();
         this.tetromino.update();
-        //this.tetrominoCollision();
     }
 
     draw(){
@@ -204,7 +180,6 @@ class GameContainer{
                 }
             }
         });
-        
 
         // Draws the outside border
         ctx.strokeStyle = "white";

@@ -6,7 +6,13 @@ class Game{
         this.gameContainer = new GameContainer(this);
         this.gameAssets = [this.gameContainer];
     }
-    
+    reset(){
+        this.gameContainer = {};
+        this.gameAssets = [];
+        this.gameContainer = new GameContainer(this);
+        this.gameAssets = [this.gameContainer];
+    }
+
     update(){ 
         this.gameAssets.forEach((gameAsset)=>{
             gameAsset.update();
