@@ -6,6 +6,10 @@ class Game{
         }
         return array;
     }
+    static pad(num, size) {
+        let s = "000000000" + num;
+        return s.substring(s.length-size);
+    }
     constructor(){
         // Game objects
         this.x = 0;
@@ -15,33 +19,39 @@ class Game{
         this.font = "16px Arial";
 
         this.rightContainer = new RightContainer(this);
+        
+        this.leftContainer = new LeftContainer(this);
         this.gameContainer = new GameContainer(this);
         //TODO add the left Container class after the right container
 
-        this.gameAssets = [this.gameContainer,this.rightContainer];
+        this.gameAssets = [this.gameContainer,this.rightContainer,this.leftContainer];
         this.centerContainer();
     }
     centerContainer(){
-        let totalWidth = this.rightContainer.width + this.gameContainer.width;
+        let totalWidth = this.rightContainer.width + this.gameContainer.width + this.leftContainer.width;
         let totalHeight = this.gameContainer.height;
 
         this.x = (this.gameWidth / 2) - (totalWidth / 2);
         this.y = (this.gameHeight / 2) - (totalHeight / 2);
 
-        this.gameContainer.x = this.x;
+        this.gameContainer.x = this.x + this.leftContainer.width;
         this.gameContainer.y = this.y;
 
-        this.rightContainer.x = this.x + 280;
+        this.rightContainer.x = this.x + this.leftContainer.width +this.gameContainer.width;
         this.rightContainer.y = this.y;
+
+        this.leftContainer.x = this.x;
+        this.leftContainer.y = this.y;
     }
     reset(){
         this.gameContainer = {};
         this.rightContainer ={};
+        this.leftContainer = {};
         this.gameAssets = [];
         this.rightContainer = new RightContainer(this);
+        this.leftContainer = new LeftContainer(this);
         this.gameContainer = new GameContainer(this);
-
-        this.gameAssets = [this.gameContainer,this.rightContainer];
+        this.gameAssets = [this.gameContainer,this.rightContainer,this.leftContainer];
         this.centerContainer();
     }
 

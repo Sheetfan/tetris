@@ -21,9 +21,9 @@ class Tetromino{
         ],
         //O
         [
-            ["4","4","0"],
-            ["4","4","0"],
-            ["0","0","0"]
+            ["0","4","4","0"],
+            ["0","4","4","0"],
+            ["0","0","0","0"]
         ],
         //S
         [
@@ -55,41 +55,74 @@ class Tetromino{
         "red", //Z
         "gray" //ghost piace
     ];
-    constructor(gameContainer){
-        this.makeNewTetromio(gameContainer);
+    static drawTetromino(tetromino, x, y, boxWidth){
+        if(tetromino.length !== 0){
+            let squareSize = 20;
+            let howLong = 0;
+            const rows = tetromino.length;
+            const columns = tetromino[0].length;
+
+            for(let i = 0; i < columns ; i++){
+                let counter = 0;
+                for(let k = 0; k < rows; k++){
+                    if(tetromino[k][i]  !== "0"){
+                        howLong++;
+                        break;
+                    }
+                }
+            }
+
+            for(let i = 0; i < rows; i++){
+                for(let k = 0; k < columns; k++){
+                    if(tetromino[i][k] !== "0"){
+                        if(tetromino[i][k] === "4"){
+                            ctx.fillStyle = Tetromino.tetrominosColour[3];
+                            let tetrominoY = (i * squareSize) + y;
+                            let tetrominoX = ((k * squareSize) + x) + (boxWidth / 2) - (((howLong+2) * squareSize) / 2);
+                            ctx.fillRect(tetrominoX, tetrominoY,squareSize,squareSize);
+                            // Draws the black border
+                            ctx.strokeStyle = "black";
+                            ctx.strokeRect(tetrominoX, tetrominoY,squareSize,squareSize);
+                        }
+                        else{
+                            switch(tetromino[i][k]){
+                                case "1":
+                                    ctx.fillStyle = Tetromino.tetrominosColour[0];
+                                    break;
+                                case "2":
+                                    ctx.fillStyle = Tetromino.tetrominosColour[1];
+                                    break;
+                                case "3":
+                                    ctx.fillStyle = Tetromino.tetrominosColour[2];
+                                    break;
+                                case "5":
+                                    ctx.fillStyle = Tetromino.tetrominosColour[4];
+                                    break;
+                                case "6":
+                                    ctx.fillStyle = Tetromino.tetrominosColour[5];
+                                    break;
+                                case "7":
+                                    ctx.fillStyle = Tetromino.tetrominosColour[6];
+                                    break;
+                                case "8":
+                                    ctx.fillStyle = Tetromino.tetrominosColour[7];
+                                    break;
+                            }
+                            let tetrominoY = (i * squareSize) + y;
+                            let tetrominoX = ((k * squareSize) + x) + (boxWidth / 2) - ((howLong * squareSize) / 2);
+                            ctx.fillRect(tetrominoX, tetrominoY,squareSize,squareSize);
+                            // Draws the black border
+                            ctx.strokeStyle = "black";
+                            ctx.strokeRect(tetrominoX, tetrominoY,squareSize,squareSize);
+                        }
+
+                    }
+                }
+            }
+        }
+        
     }
-    makeNewTetromio(gameContainer){
-        this.gameContainer = gameContainer;
-        //this.getCurrentTetromino();
-        let index = Math.floor(Math.random() * 7);
-        let random = Tetromino.tetrominos[index];
-        this.currentTetromino = gameContainer.game.rightContainer.getNexttetromino();
-        this.currentShape = this.whatShape(this.currentTetromino);
-        this.x = 3;
-        this.y = 0;
-        this.displaceY();
-        this.rotation = 0;
-
-        this.holdDelayinterval = 100;
-        this.horizontalInterval = 100; // The rate at which the tetromino moves left or right
-        this.defaultdownInterval = 1000; // The default rate at which the tetromino move down
-        this.downInterval = 30; // the rate at which the tetromino will move down when the down button is held
-
-        this.movementDownId = setInterval(this.moveDown.bind(this), this.defaultdownInterval);
-        this.timeoutid = 0;
-        this.lockTimeid = 0;
-        this.horizontalMovementId = 0;
-
-        this.lockTimeidSet = false;
-        this.canDownBool = true;
-        this.isKeyPressed = false;
-        this.isKeyPressedhorizontal = false;
-        this.refmovement = this.movement.bind(this);
-        this.refmovementUp = this.movementButtonUp.bind(this);
-        window.addEventListener("keydown",this.refmovement);
-        window.addEventListener("keyup", this.refmovementUp);
-    }
-    whatShape(tetromino){
+    static whatShape(tetromino){
         let arraysHaveSameMatrix = (array1, array2)=> {
             return JSON.stringify(array1) === JSON.stringify(array2);
         }
@@ -115,6 +148,60 @@ class Tetromino{
             return "z";
         }
     }
+    static whatTetromino(shape){
+        if(shape === "i"){
+            return Tetromino.tetrominos[0];
+        }
+        else if(shape === "j"){
+            return Tetromino.tetrominos[1];
+        }
+        else if(shape === "l"){
+            return Tetromino.tetrominos[2];
+        }
+        else if(shape === "o"){
+            return Tetromino.tetrominos[3];
+        }
+        else if(shape === "s"){
+            return Tetromino.tetrominos[4];
+        }
+        else if(shape === "t"){
+            return Tetromino.tetrominos[5];
+        }
+        else if(shape === "z"){
+            return Tetromino.tetrominos[6];
+        }
+    }
+        
+    constructor(gameContainer,tetromino,interval){
+        this.gameContainer = gameContainer;
+
+        this.currentTetromino = tetromino;
+        this.currentShape = Tetromino.whatShape(tetromino);
+        this.x = 3;
+        this.y = 0;
+        this.displaceY();
+        this.rotation = 0;
+
+        this.holdDelayinterval = 100;
+        this.horizontalInterval = 100; // The rate at which the tetromino moves left or right
+        this.defaultdownInterval = interval; // The default rate at which the tetromino move down
+        this.downInterval = 30; // the rate at which the tetromino will move down when the down button is held
+
+        this.movementDownId = setInterval(this.moveDown.bind(this), this.defaultdownInterval);
+        this.timeoutid = 0;
+        this.lockTimeid = 0;
+        this.horizontalMovementId = 0;
+
+        this.lockTimeidSet = false;
+        this.canDownBool = true;
+        this.isKeyPressed = false;
+        this.isKeyPressedhorizontal = false;
+        this.refmovement = this.movement.bind(this);
+        this.refmovementUp = this.movementButtonUp.bind(this);
+        window.addEventListener("keydown",this.refmovement);
+        window.addEventListener("keyup", this.refmovementUp);
+    }
+
     displaceY(){
         let displacement = 0;
         let displace = true;
@@ -151,10 +238,10 @@ class Tetromino{
         }
     }
     movement(e){
-            // if (e.defaultPrevented) {
-            //     this.isKeyPressed = true;
-            //     return; // Do nothing if the event was already processed
-            // }
+            if (e.defaultPrevented) {
+               // this.isKeyPressed = true;
+                return; // Do nothing if the event was already processed
+            }
 
         // Spins the tetroino clockwise
         if((e.key === "Up" || e.key === "ArrowUp") && !this.isKeyPressed){
@@ -192,11 +279,15 @@ class Tetromino{
         if(e.key === " " && !this.isKeyPressed){
             this.hardDrop();
             this.isKeyPressed = true;
-            this.setTetromino();
+        }
+
+        if(e.key === "c" && !this.isKeyPressed){
+            this.gameContainer.game.leftContainer.holdTetromino();
+            this.isKeyPressed = true;
         }
     }
     movementButtonUp(e){
-        if((e.key === "Up" || e.key === "ArrowUp" || e.key === "Space") && this.isKeyPressed){
+        if((e.key === "Up" || e.key === "ArrowUp" || e.key === " ") && this.isKeyPressed){
             this.isKeyPressed = false;
         }
         if((e.key === "Down" || e.key === "ArrowDown") && this.isKeyPressed) {
@@ -226,6 +317,8 @@ class Tetromino{
                 this.y++;
             }
         }
+        clearTimeout(this.lockTimeid);
+        this.gameContainer.setTetromino();
     }
     moveDown(){
         if(this.canDownBool){
@@ -285,22 +378,9 @@ class Tetromino{
             else{
                 bufferArray[bufferArray.length + futuretY][futuretX] = this.currentTetromino[futuretY - this.y][futuretX - this.x];
             }
-        } 
-
-        
+        }         
     }
-    setTetromino(){
-        this.stopMoving();
-        if(this.gameContainer.isGameOver()){
-            this.gameContainer.game.reset();
-        }
-        else{
-            this.gameContainer.addToBlocksArray();
-            this.gameContainer.clearLines();
-            this.makeNewTetromio(this.gameContainer);
-        }
 
-    }
     canMoveLeft(){
         let {blocksArray,bufferArray} =  this.gameContainer;
         let futureTetrominoPos = this.futureTetrominoPos(this.currentTetromino,-1,0);
@@ -333,7 +413,7 @@ class Tetromino{
                 // Start the lock timer
                 clearInterval(this.movementDownId);
                 if(!this.lockTimeidSet){
-                    this.lockTimeid = setTimeout(this.setTetromino.bind(this),500);
+                    this.lockTimeid = setTimeout(this.gameContainer.setTetromino.bind(this.gameContainer),500);
                     this.lockTimeidSet = true;
                 }
                 return false;

@@ -42,11 +42,14 @@ class GameContainer{
         this.height = this.blockSize * this.rowLength;
         this.width = this.blockSize * this.columnsLength;
 
-        // Set screen to the middle
-        this.x = game.y + 0;
-        this.y = game.x + 0;
+        this.linesCleared = 0;
+        this.speedupConditionRate = 5;
+        this.speedupCondition = this.speedupConditionRate;
 
-        this.tetromino = new Tetromino(this);
+        // Set screen to the middle
+        this.x = 0;
+        this.y = 0;
+        this.tetromino = new Tetromino(this,game.rightContainer.getNexttetromino(),this.game.leftContainer.getSpeed());
     }
     isGameOver(){
         let {currentTetromino,y,x} = this.tetromino;
@@ -59,6 +62,27 @@ class GameContainer{
             }  
         }
         return futureTetrominoPos.length === counter;
+    }
+    respawnTetromino(tetromino){
+        this.tetromino.stopMoving();
+        this.tetromino = null;
+        this.tetromino = new Tetromino(this,tetromino,this.game.leftContainer.getSpeed());
+    }
+        
+    setTetromino(){
+        // this.tetromino.stopMoving();
+        if(this.isGameOver()){
+            this.tetromino.stopMoving();
+            this.tetromino = null;
+            this.game.reset();
+        }
+        else{
+            this.addToBlocksArray();
+            this.clearLines();
+            this.game.leftContainer.holdPassed = false;
+            this.respawnTetromino(this.game.rightContainer.getNexttetromino());
+        }
+
     }
     clearBlocksArray(){
         this.blocksArray = [];
@@ -118,7 +142,12 @@ class GameContainer{
         for (let i = 0; i < rowsCleared; i++) {
             clearedGrid.unshift(Array(this.columnsLength).fill("0"));
         }
-        
+        this.game.leftContainer.increaseScore(rowsCleared);
+        this.linesCleared += rowsCleared;
+        if(this.linesCleared >= this.speedupCondition){
+            this.game.leftContainer.level++;
+            this.speedupCondition += this.speedupConditionRate;
+        }
         this.blocksArray = clearedGrid;
     }
     update(){
