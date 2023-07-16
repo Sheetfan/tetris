@@ -21,9 +21,9 @@ class Tetromino{
         ],
         //O
         [
-            ["0","4","4","0"],
-            ["0","4","4","0"],
-            ["0","0","0","0"]
+            ["4","4","0"],
+            ["4","4","0"],
+            ["0","0","0"]
         ],
         //S
         [
@@ -58,14 +58,13 @@ class Tetromino{
     constructor(gameContainer){
         this.makeNewTetromio(gameContainer);
     }
-
     makeNewTetromio(gameContainer){
         this.gameContainer = gameContainer;
+        //this.getCurrentTetromino();
         let index = Math.floor(Math.random() * 7);
         let random = Tetromino.tetrominos[index];
-
-        this.currentTetromino = random.map((subArray) => subArray.slice());
-        this.currentShape = this.whatShape(index);
+        this.currentTetromino = gameContainer.game.rightContainer.getNexttetromino();
+        this.currentShape = this.whatShape(this.currentTetromino);
         this.x = 3;
         this.y = 0;
         this.displaceY();
@@ -90,22 +89,30 @@ class Tetromino{
         window.addEventListener("keydown",this.refmovement);
         window.addEventListener("keyup", this.refmovementUp);
     }
-    whatShape(index){
-        switch(index){
-            case 0:
-                return 'i';
-            case 1:
-                return 'j';
-            case 2:
-                return 'l';
-            case 3:
-                return 'o';
-            case 4:
-                return's';
-            case 5:
-                return 't';
-            case 6:
-                return 'z';
+    whatShape(tetromino){
+        let arraysHaveSameMatrix = (array1, array2)=> {
+            return JSON.stringify(array1) === JSON.stringify(array2);
+        }
+        if(arraysHaveSameMatrix(tetromino,Tetromino.tetrominos[0])){
+            return "i";
+        }
+        else if(arraysHaveSameMatrix(tetromino,Tetromino.tetrominos[1])){
+            return "j";
+        }
+        else if(arraysHaveSameMatrix(tetromino,Tetromino.tetrominos[2])){
+            return "l";
+        }
+        else if(arraysHaveSameMatrix(tetromino,Tetromino.tetrominos[3])){
+            return "o";
+        }
+        else if(arraysHaveSameMatrix(tetromino,Tetromino.tetrominos[4])){
+            return "s";
+        }
+        else if(arraysHaveSameMatrix(tetromino,Tetromino.tetrominos[5])){
+            return "t";
+        }
+        else if(arraysHaveSameMatrix(tetromino,Tetromino.tetrominos[6])){
+            return "z";
         }
     }
     displaceY(){
@@ -487,7 +494,7 @@ class Tetromino{
         const numCols = this.currentTetromino[0].length;
         let array = this.currentTetromino.map((subArray) => subArray.slice());
         //for square matrix
-        if(numRows === numCols){
+        if( this.currentShape !== "o"){
             // Transpose the array
             for (let i = 0; i < numRows; i++) {
                 for (let k = i + 1; k < numCols; k++) {

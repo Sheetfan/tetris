@@ -43,8 +43,8 @@ class GameContainer{
         this.width = this.blockSize * this.columnsLength;
 
         // Set screen to the middle
-        this.x = (this.game.gameWidth - this.width) / 2;
-        this.y = (this.game.gameHeight - this.height) / 2;
+        this.x = game.y + 0;
+        this.y = game.x + 0;
 
         this.tetromino = new Tetromino(this);
     }
