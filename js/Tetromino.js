@@ -276,19 +276,23 @@ class Tetromino{
             this.isKeyPressedhorizontal = true;
         }
         // makes the tetroino hard drop
-        if(e.key === " " && !this.isKeyPressed){
+        if(e.key === " " && !this.gameContainer.hardDropPrassed){
             this.hardDrop();
-            this.isKeyPressed = true;
+            this.gameContainer.hardDropPrassed = true;
         }
 
-        if(e.key === "c" && !this.isKeyPressed){
+        if(e.key === "c"){
             this.gameContainer.game.leftContainer.holdTetromino();
             this.isKeyPressed = true;
         }
     }
     movementButtonUp(e){
-        if((e.key === "Up" || e.key === "ArrowUp" || e.key === " ") && this.isKeyPressed){
+
+        if((e.key === "Up" || e.key === "ArrowUp") && this.isKeyPressed){
             this.isKeyPressed = false;
+        }
+        if(e.key === " " || this.gameContainer.hardDropPrassed){
+            this.gameContainer.hardDropPrassed = false;
         }
         if((e.key === "Down" || e.key === "ArrowDown") && this.isKeyPressed) {
             this.isKeyPressed = false;

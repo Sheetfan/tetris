@@ -50,6 +50,7 @@ class GameContainer{
         this.x = 0;
         this.y = 0;
         this.tetromino = new Tetromino(this,game.rightContainer.getNexttetromino(),this.game.leftContainer.getSpeed());
+        this.hardDropPrassed = false;
     }
     isGameOver(){
         let {currentTetromino,y,x} = this.tetromino;

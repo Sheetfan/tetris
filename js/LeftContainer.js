@@ -7,10 +7,14 @@ class LeftContainer{
         this.width = 150;
         this.heldTetromino = [];
         this.level = 1;
+        this.maxlevel = 12;
         this.score = 0;
         this.holdPassed = false;
     }
     getSpeed(){
+        if(this.maxlevel <= this.level){
+            this.level = this.maxlevel;
+        }
         switch(this.level){
             case 1:
                 return 1000;
@@ -32,6 +36,10 @@ class LeftContainer{
                 return 94;
             case 10:
                 return 64;
+            case 11:
+                return 43;
+            case 12:
+                return 28;
 
         }
     }
